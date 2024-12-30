@@ -1,0 +1,1 @@
+cd "d:\Coding\ForJob-NT\Messenger\" ; if ($?) { gcc Messenger-User.c -o Messenger-User func/functions.c} ; if ($?) { .\Messenger-User }  
