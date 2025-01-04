@@ -268,24 +268,27 @@ void WriteMessage(struct Message message)
     strcat(fileName, message.recipient_username);
 
 A:
-    fileMessage = fopen(fileName,"a");
+    fileMessage = fopen(fileName,"r");
 
     if (fileMessage == NULL)
     {
         if (met == 0)
         {   met++;
             fileName[0] = '\0';
-            strcat(fileName, message.recipient_username);
+            strcpy(fileName, message.recipient_username);
             strcat(fileName,"-");
-            strcpy(fileName, message.sender_username);
+            strcat(fileName, message.sender_username);
             goto A;         
         }
+
+        printf("%s \n",fileName);
         
         printf("Habar faylini yozish uchun ochishda hatolik!!!");
     }
     
    else
-    {
+    {   fclose(fileMessage);
+        fileMessage = fopen(fileName,"a");
        sprintf(messageData,"\nEga: %s\n\nXabar: %s\n\nVaqti: %s\n\n",message.sender_username,message.length_message,message.datetime);
 
         printf("%s ",messageData);
