@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <time.h>
 
 
 
@@ -42,10 +43,10 @@ int VerificationUserName(char *userName)
             }            
         }
 
-        if (lamp == 1)
-        {
-            printf("bunday foydalanuvchi nomi mavjud iltimos boshqa nomdan foydalaning\n");
-        }
+        // if (lamp == 1)
+        // {
+        //     printf("bunday foydalanuvchi nomi mavjud iltimos boshqa nomdan foydalaning\n");
+        // }
 
         fclose(veriUsername);
 
@@ -56,6 +57,7 @@ int VerificationUserName(char *userName)
 struct User AddUser()
 {   FILE *veriUsername;
     veriUsername = fopen("Users.txt","r");
+    int lamp;
     struct User User;
     {
         A:
@@ -68,8 +70,15 @@ struct User AddUser()
     do
     {
         printf("User name: ");
-        scanf("%s",User.user_name);       
-    } while (VerificationUserName(User.user_name) == 1);
+        scanf("%s",User.user_name); 
+        lamp = VerificationUserName(User.user_name);  
+
+        if (lamp == 1)
+        {
+            printf("bunday foydalanuvchi nomi mavjud iltimos boshqa nomdan foydalaning\n");
+        }
+
+    } while (lamp == 1);
 
         printf("Password: ");
         scanf("%s",User.Password);
@@ -91,7 +100,7 @@ struct User AddUser()
 }
 
 
-void SignUp()
+struct User SignUp()
 {
 
                 struct User user = AddUser();
@@ -120,6 +129,8 @@ void SignUp()
             sprintf(userData,"%d %s %s +998%s %s %s\n",user.Id,user.user_name,user.Password,user.PhoneNumber,user.FirstName,user.LastName);
             printf("Siz muvaffaqiyatli royhatdan o'tdingiz!!!");
             fprintf(fileUsers,"%s",userData);
+
+            return user;
 }
 
 
@@ -133,7 +144,7 @@ void SignUp()
 
 
 
-int VerificationUser( struct LoginUser loginUser)
+struct LoginConfirmation VerificationUser( struct LoginUser loginUser)
 {
     char satr[50];
     int lamp  = 0;
@@ -141,15 +152,25 @@ int VerificationUser( struct LoginUser loginUser)
     FILE *veriUser;
     veriUser = fopen("Users.txt","r");
 
+
+    struct LoginConfirmation loginConfirmation;
+
     while (fscanf(veriUser,"%s",&satr)==1)
     {
         sch++;
-        if(sch == 2)
+        if (sch == 1)
+        {
+            loginConfirmation.user.Id = atoi(satr);
+        }
+        
+        else if(sch == 2)
         {
             if (strcmp(loginUser.user_name,satr) == 0)
             {
                 lamp++;
             }
+
+            strcpy(loginConfirmation.user.user_name,satr);
             
         }
         else if (sch == 3)
@@ -158,7 +179,19 @@ int VerificationUser( struct LoginUser loginUser)
             {
                 lamp++;
             }
+
+            strcpy(loginConfirmation.user.Password,satr);
             
+        }
+
+        else if (sch == 4)
+        {
+            strcpy(loginConfirmation.user.PhoneNumber,satr);
+        }
+
+        else if (sch == 5)
+        {
+            strcpy(loginConfirmation.user.FirstName,satr);
         }
 
         else if (sch == 6)
@@ -169,27 +202,33 @@ int VerificationUser( struct LoginUser loginUser)
             }
             else lamp = 0;
             sch = 0;
+            strcpy(loginConfirmation.user.LastName,satr);
         }
     }
+
+
 
     if (lamp == 2)
     {
         printf("Hush kelibsiz!!!\n");
-        return lamp;
+ //       return lamp;
     }
     else 
     {
         printf("Login yoki parol hato qayta urining\n");
-        return lamp;
+ //       return lamp;
     }
-    
-    return lamp;
+
+    loginConfirmation.match = lamp;
+
+    return loginConfirmation;
 
 }
 
 struct User LoginUser()
 {
     struct LoginUser LoginUser;
+    struct LoginConfirmation userVer;
 
     do
     {   
@@ -198,9 +237,10 @@ struct User LoginUser()
 
         printf("Password: ");
         scanf("%s",LoginUser.Password);
-    } while (VerificationUser(LoginUser) == 0);
+        userVer = VerificationUser(LoginUser);
+    } while (userVer.match == 0);
 
-    
+    return userVer.user;
 }
 
 
@@ -215,22 +255,118 @@ struct User LoginUser()
                                             //Write Message
 
 
-void WriteMessage()
+void WriteMessage(struct Message message)
 {
+    FILE *fileMessage;
 
+    char messageData[600],fileName[65];
+    int met = 0; 
 
+   
+    strcpy(fileName, message.sender_username);
+    strcat(fileName,"-");
+    strcat(fileName, message.recipient_username);
 
+A:
+    fileMessage = fopen(fileName,"a");
+
+    if (fileMessage == NULL)
+    {
+        if (met == 0)
+        {   met++;
+            fileName[0] = '\0';
+            strcat(fileName, message.recipient_username);
+            strcat(fileName,"-");
+            strcpy(fileName, message.sender_username);
+            goto A;         
+        }
+        
+        printf("Habar faylini yozish uchun ochishda hatolik!!!");
+    }
+    
+   else
+    {
+       sprintf(messageData,"\nEga: %s\n\nXabar: %s\n\nVaqti: %s\n\n",message.sender_username,message.length_message,message.datetime);
+
+        printf("%s ",messageData);
+       fprintf(fileMessage,"%s",messageData);
+       fclose(fileMessage);
+    }
 }
 
 
+void WriteController(struct User user)
+{
 
+    struct Message message;
+    int veriuser;
 
+    strcpy(message.sender_username, user.user_name);
+    do
+    {   
 
+        printf("Kimga habar yozasiz(user name): ");
+        scanf("%s",message.recipient_username);
+
+        veriuser = VerificationUserName(message.recipient_username);
+
+        if (veriuser == 0)
+        {
+            printf("Bunday foydalanuvchi mavjud emas! ");
+        }
+        
+    } while (veriuser == 0 );
+
+    printf("habar yozishni to'xtatish 0!\n");
+
+    char txt[500];
+
+    do
+    {   printf("\nHabar: ");
+        scanf(" %499[^\n]", message.length_message);
+        
+        if(strcmp(message.length_message, "0") != 0)
+        {
+            strcpy(message.datetime, TimeReverser());
+            WriteMessage(message);
+        }
+        else break;
+
+    } while (1);
+}
 
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+
+
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                    //Time function
+
+char* TimeReverser()
+{
+
+
+    time_t current_time;
+    struct tm *time_info;
+    static char time_str[20];  
+
+    time(&current_time);
+
+
+    time_info = localtime(&current_time);
+
+
+    strftime(time_str, sizeof(time_str), "%H:%M:%S %d.%m.%Y", time_info);
+
+    return time_str;
+}
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

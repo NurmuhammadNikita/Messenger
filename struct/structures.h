@@ -29,12 +29,19 @@ struct LoginUser
     char Password[50];  
 };
 
+struct LoginConfirmation
+{
+    struct User user;
+    int match;
+};
+
+
 
 struct Message
 {
     char sender_username [30];
     char recipient_username [30];
-    char datetime[15];
+    char datetime[20];
     char length_message[500];
 };
 

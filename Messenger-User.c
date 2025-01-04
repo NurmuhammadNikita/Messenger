@@ -1,8 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <stdbool.h>
+
 
 #include "struct/structures.h"
 #include "func/functions.h"
@@ -13,8 +11,9 @@
 
 
 int main()
-{
+{   
     struct User user;
+    
 
 
     int amal;
@@ -28,54 +27,30 @@ int main()
 
         switch (amal)
         { 
-        case 1:
-        {
-            SignUp();
-
-            do
+            case 1:
             {
-                printf("Habar yozish: 3 ");
-                printf("orqaga: 4 ");
-
-                switch (amal)
-                {
-                case 3:
-                    
-                    // habar yozadigan funksiya
-
-                    break;
+                user = SignUp();
                 
-                default:
-                    break;
-                }
-            } while (amal != 4);
+                break;
+
             
-
-
-
-            break;
-
-           
-        }
-        
-        case 2:
-        {
-           LoginUser();
-           break; 
-           
+            }
             
-        }
+            case 2:
+            {
+                user = LoginUser();   
+            }
 
-        case 3:
-        {
-          
-           break; 
-           
-            
-        }
+            case 3:
+            {
+                printf("%s %s",user.FirstName,user.user_name);  
+                WriteController(user);
+  
+                break;   
+            }
 
-        default:
-            break;
+            default:
+                break;
         }
 
 
