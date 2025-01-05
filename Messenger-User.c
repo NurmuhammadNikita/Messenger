@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -13,7 +14,7 @@
 int main()
 {   
     struct User user;
-    
+    system("cls");
 
 
     int amal;
@@ -29,31 +30,20 @@ int main()
         { 
             case 1:
             {
-                user = SignUp();
-                
+                user = SignUp();    
                 break;
-
-            
-            }
-            
+            }   
             case 2:
             {
-                user = LoginUser();   
+                user = LoginUser();
+                WriteController(user);   
+                break;
             }
-
-            case 3:
-            {
-                printf("%s %s",user.FirstName,user.user_name);  
-                WriteController(user);
-  
-                break;   
-            }
-
             default:
+
+                printf("Bunday raqamli amal mavjud emas!\n");
                 break;
         }
-
-
 
 
     } while (amal != 0);

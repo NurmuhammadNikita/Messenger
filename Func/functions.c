@@ -255,46 +255,21 @@ struct User LoginUser()
                                             //Write Message
 
 
-void WriteMessage(struct Message message)
+void WriteMessage(struct Message message, char *fileName)
 {
     FILE *fileMessage;
 
-    char messageData[600],fileName[65];
-    int met = 0; 
+    char messageData[600];
 
-   
-    strcpy(fileName, message.sender_username);
-    strcat(fileName,"-");
-    strcat(fileName, message.recipient_username);
+    fileMessage = fopen(fileName,"r");  
+    fclose(fileMessage);
+    fileMessage = fopen(fileName,"a");
+    sprintf(messageData,"\nEga: %s\n\nXabar: %s\n\nVaqti: %s\n\n",message.sender_username,message.length_message,message.datetime);
 
-A:
-    fileMessage = fopen(fileName,"r");
-
-    if (fileMessage == NULL)
-    {
-        if (met == 0)
-        {   met++;
-            fileName[0] = '\0';
-            strcpy(fileName, message.recipient_username);
-            strcat(fileName,"-");
-            strcat(fileName, message.sender_username);
-            goto A;         
-        }
-
-        printf("%s \n",fileName);
-        
-        printf("Habar faylini yozish uchun ochishda hatolik!!!");
-    }
+    printf("%s ",messageData);
+    fprintf(fileMessage,"%s",messageData);
+    fclose(fileMessage);
     
-   else
-    {   fclose(fileMessage);
-        fileMessage = fopen(fileName,"a");
-       sprintf(messageData,"\nEga: %s\n\nXabar: %s\n\nVaqti: %s\n\n",message.sender_username,message.length_message,message.datetime);
-
-        printf("%s ",messageData);
-       fprintf(fileMessage,"%s",messageData);
-       fclose(fileMessage);
-    }
 }
 
 
@@ -320,18 +295,53 @@ void WriteController(struct User user)
         
     } while (veriuser == 0 );
 
+
+// fayl mavjudligini tekshirish
+
+FILE *fileMessage;
+
+    char fileName[65];
+    int met = 0; 
+
+   
+    strcpy(fileName, message.sender_username);
+    strcat(fileName,"-");
+    strcat(fileName, message.recipient_username);
+
+A:
+    fileMessage = fopen(fileName,"r");
+
+    if (fileMessage == NULL)
+    {
+        if (met == 0)
+        {   met++;
+            fileName[0] = '\0';
+            strcpy(fileName, message.recipient_username);
+            strcat(fileName,"-");
+            strcat(fileName, message.sender_username);
+            goto A;         
+        }
+        
+        printf("Habar faylini yozish uchun ochishda hatolik!!!");
+    }
+    fclose(fileMessage);
+
+
     printf("habar yozishni to'xtatish 0!\n");
 
-    char txt[500];
 
     do
-    {   printf("\nHabar: ");
+    {   system("cls");
+        ReadFile(fileName); 
+                
+        printf("\nHabar: ");
+
         scanf(" %499[^\n]", message.length_message);
         
         if(strcmp(message.length_message, "0") != 0)
         {
             strcpy(message.datetime, TimeReverser());
-            WriteMessage(message);
+            WriteMessage(message,fileName);
         }
         else break;
 
@@ -342,7 +352,52 @@ void WriteController(struct User user)
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+//№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№
+void ReadFile(char *filename)
+{
 
+        FILE *file = fopen(filename, "rb"); // Faylni binar rejimda ochish
+    if (!file) {
+        perror("Faylni ochishda xatolik");
+        return;
+    }
+
+    // Fayl uzunligini aniqlading
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+
+    // Faylning oxiridan 500 ta belgini o'qish
+    long offset = (file_size > 500) ? file_size - 500 : 0;
+    fseek(file, offset, SEEK_SET);
+
+    // O'qish uchun ajratilgan joy
+    size_t read_size = (file_size > 500) ? 500 : file_size;
+    char *buffer = (char *)malloc(read_size + 1);
+    if (!buffer) {
+        perror("Xotira ajratishda xatolik");
+        fclose(file);
+        return;
+    }
+
+    fread(buffer, 1, read_size, file);
+    buffer[read_size] = '\0'; // Null-terminate qilish
+
+    printf("Fayl oxiridan o'qilgan belgilar:\n%s\n", buffer);
+
+    // Xotirani bo'shatish va faylni yopish
+    free(buffer);
+    fclose(file);
+}
+
+
+
+
+
+
+
+
+
+//№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№
 
 
 

@@ -40,5 +40,5 @@ void WriteController(struct User);
 char* TimeReverser();
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+void ReadFile(char *filename);
 #endif
