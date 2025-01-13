@@ -30,13 +30,16 @@ int main()
         { 
             case 1:
             {
-                user = SignUp();    
+                user = SignUp();
+                system("cls"); 
+                printf("Siz muvaffaqiyatli royhatdan o'tdingiz!!!\n");   
                 break;
             }   
             case 2:
             {
                 user = LoginUser();
-                WriteController(user);   
+                WriteController(user);  
+                system("cls"); 
                 break;
             }
             default:

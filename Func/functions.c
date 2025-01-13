@@ -127,8 +127,12 @@ struct User SignUp()
             fclose(fileForId);
             
             sprintf(userData,"%d %s %s +998%s %s %s\n",user.Id,user.user_name,user.Password,user.PhoneNumber,user.FirstName,user.LastName);
-            printf("Siz muvaffaqiyatli royhatdan o'tdingiz!!!");
+            printf("%s \n",userData);
             fprintf(fileUsers,"%s",userData);
+
+
+            fclose(fileForId);
+            fclose(fileUsers);
 
             return user;
 }
@@ -258,11 +262,10 @@ struct User LoginUser()
 void WriteMessage(struct Message message, char *fileName)
 {
     FILE *fileMessage;
-
     char messageData[600];
 
-    fileMessage = fopen(fileName,"r");  
-    fclose(fileMessage);
+    // Habarni yozish uchun ochish va nm 
+
     fileMessage = fopen(fileName,"a");
     sprintf(messageData,"\nEga: %s\n\nXabar: %s\n\nVaqti: %s\n\n",message.sender_username,message.length_message,message.datetime);
 
@@ -280,6 +283,8 @@ void WriteController(struct User user)
     int veriuser;
 
     strcpy(message.sender_username, user.user_name);
+
+    // habar yozadigan odamni mevjudligini tekshirish
     do
     {   
 
@@ -329,11 +334,11 @@ A:
 
     printf("habar yozishni to'xtatish 0!\n");
 
-
+    // Habar yozadigan qisim
     do
     {   system("cls");
         ReadFile(fileName); 
-                
+
         printf("\nHabar: ");
 
         scanf(" %499[^\n]", message.length_message);
@@ -353,10 +358,13 @@ A:
 
 
 //№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№
+                                // Faylni yangilab turish funksiyasi
+
 void ReadFile(char *filename)
 {
 
-        FILE *file = fopen(filename, "rb"); // Faylni binar rejimda ochish
+        FILE *file = fopen(filename, "rb");
+        //chat GPT binar och dedi binar ochganding file ohiridagi ortiqcha belgilarsiz ishladi
     if (!file) {
         perror("Faylni ochishda xatolik");
         return;
@@ -364,27 +372,26 @@ void ReadFile(char *filename)
 
     // Fayl uzunligini aniqlading
     fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
+    long fileSize = ftell(file);
 
     // Faylning oxiridan 500 ta belgini o'qish
-    long offset = (file_size > 500) ? file_size - 500 : 0;
+    long offset = (fileSize > 500) ? fileSize - 500 : 0;
     fseek(file, offset, SEEK_SET);
 
     // O'qish uchun ajratilgan joy
-    size_t read_size = (file_size > 500) ? 500 : file_size;
-    char *buffer = (char *)malloc(read_size + 1);
+    int readSize = (fileSize > 500) ? 500 : fileSize;
+    char *buffer = (char *)malloc(readSize + 1);
     if (!buffer) {
         perror("Xotira ajratishda xatolik");
         fclose(file);
         return;
     }
 
-    fread(buffer, 1, read_size, file);
-    buffer[read_size] = '\0'; // Null-terminate qilish
-
+    fread(buffer, 1, readSize, file);
+    buffer[readSize] = '\0'; 
     printf("Fayl oxiridan o'qilgan belgilar:\n%s\n", buffer);
 
-    // Xotirani bo'shatish va faylni yopish
+
     free(buffer);
     fclose(file);
 }
